@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  database:
+    container_name: datacentrics_mysql
+    image: mysql
+    restart: always
+    ports:
+      - '3306:3036'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: datacentrics
+    volumes:
+      - './mysql/db/:/docker-entrypoint-initdb.d/'
+  backend:
+    container_name: datacentrics_node
+    restart: always
+    build:
+      context: ./node/
+      dockerfile: Dockerfile
+    volumes:
+      - './node/src/:/node/src/'
+    ports:
+      - '6060:6060'
+  frontend:
+    container_name: datacentrics_angular
+    restart: always
+    build:
+      context: ./angular/
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    links:
+      - backend
